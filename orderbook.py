@@ -1,6 +1,6 @@
 import sys
 import time
-import pybithumb
+import ccxt
 from PyQt5 import uic
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QTableWidgetItem, QProgressBar
@@ -16,7 +16,7 @@ class OrderbookWorker(QThread):
 
     def run(self):
         while self.alive:
-            data  = pybithumb.get_orderbook(self.ticker, limit=10)
+            data  = ccxt.binance().fetch_order_book(self.ticker, limit = 10)
             time.sleep(0.05)
             if data != None:
                 self.dataSent.emit(data)
@@ -26,7 +26,7 @@ class OrderbookWorker(QThread):
 
 
 class OrderbookWidget(QWidget):
-    def __init__(self, parent=None, ticker="BTC"):
+    def __init__(self, parent=None, ticker="BTC/USDT"):
         super().__init__(parent)
         uic.loadUi("resource/orderbook.ui", self)
         self.ticker = ticker
@@ -82,14 +82,14 @@ class OrderbookWidget(QWidget):
     def updateData(self, data):
         tradingValues = [ ]
         for v in data['bids']:
-            tradingValues.append(int(v['price'] * v['quantity']))
+            tradingValues.append(int(v[0] * v[1]))
         maxtradingValue = max(tradingValues)
 
-        for i, v in enumerate(data['asks'][::-1]):
+        for i, v in enumerate(data['asks']):
             item_0 = self.tableAsks.item(i, 0)
-            item_0.setText(f"{v['price']:,}")
+            item_0.setText(f"{v[0]:,}")
             item_1 = self.tableAsks.item(i, 1)
-            item_1.setText(f"{v['quantity']:,}")
+            item_1.setText(f"{v[1]:,}")
             item_2 = self.tableAsks.cellWidget(i, 2)
             item_2.setRange(0, maxtradingValue)
             item_2.setFormat(f"{tradingValues[i]:,}")
@@ -99,9 +99,9 @@ class OrderbookWidget(QWidget):
 
         for i, v in enumerate(data['bids']):
             item_0 = self.tableBids.item(i, 0)
-            item_0.setText(f"{v['price']:,}")
+            item_0.setText(f"{v[0]:,}")
             item_1 = self.tableBids.item(i, 1)
-            item_1.setText(f"{v['quantity']:,}")
+            item_1.setText(f"{v[1]:,}")
             item_2 = self.tableBids.cellWidget(i, 2)
             item_2.setRange(0, maxtradingValue)
             item_2.setFormat(f"{tradingValues[i]:,}")
