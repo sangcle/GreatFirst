@@ -1,12 +1,14 @@
 import sys
+import os
 from PyQt5 import uic
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtGui import QPainter
 from PyQt5.QtChart import QLineSeries, QChart, QValueAxis, QDateTimeAxis
 from PyQt5.QtCore import Qt, QDateTime
 import time
-import ccxt
 from PyQt5.QtCore import QThread, pyqtSignal
+
+from binance.client import Client
 
 class PriceWorker(QThread):
     dataSent = pyqtSignal(float)
@@ -18,16 +20,18 @@ class PriceWorker(QThread):
 
     def run(self):
         while self.alive:
-            data  = ccxt.binance().fetch_ticker(self.ticker)
+            # data = ccxt.binance().fetch_ticker(self.ticker)
+            data = Client().get_symbol_ticker(symbol=self.ticker)
+            # print(btc_self)
             time.sleep(1)
             if data != None:
-                self.dataSent.emit(data['close'])
+                self.dataSent.emit(float(data['price']))
 
     def close(self):
         self.alive = False
 
 class ChartWidget(QWidget):
-    def __init__(self, parent=None, ticker="BTC/USDT"):
+    def __init__(self, parent=None, ticker="BTCUSDT"):
         super().__init__(parent)
         uic.loadUi("resource/chart.ui", self)
         self.ticker = ticker
