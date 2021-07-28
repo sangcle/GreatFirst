@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QTableWidgetItem, QProgressBar
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, QPropertyAnimation
 
+
 class OrderbookWorker(QThread):
     dataSent = pyqtSignal(dict)
 
@@ -23,6 +24,9 @@ class OrderbookWorker(QThread):
 
     def close(self):
         self.alive = False
+
+
+class AsyncOrderbookWorker:
 
 
 class OrderbookWidget(QWidget):
