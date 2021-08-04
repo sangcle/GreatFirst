@@ -417,7 +417,7 @@ plots = {}
 fplt.y_pad = 0.07 # pad some extra (for control panel)
 fplt.max_zoom_points = 7
 fplt.autoviewrestore()
-ax,ax_rsi = fplt.create_plot('Complicated Binance Futures Example', rows=2, init_zoom_periods=3000)
+ax,ax_rsi = fplt.create_plot('Complicated Binance Futures Example', rows=2, init_zoom_periods=1000)
 axo = ax.overlay()
 
 # use websocket for real-time
